@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nova for Mac</title>
-<meta name="description" content="A little star that lives in your MacBook's notch. It keeps time on your focus and breaks, greets you, and taps you when your calendar or your AI agents need you.">
+<meta name="description" content="A little star that lives in your MacBook's notch. It keeps time on your focus and breaks, greets you, and taps you when a meeting is coming or an AI agent needs you.">
 <meta property="og:title" content="Nova for Mac">
 <meta property="og:description" content="A little star that lives in your notch.">
 <meta property="og:image" content="https://yarielito06.github.io/nova-releases/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#06071A">
 <link rel="icon" href="assets/star-plain-cut.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,361 +17,322 @@
 <style>
   :root {
     --night: #06071A;        /* the sky */
-    --dusk: #14163F;         /* glow at the top of the sky */
+    --dusk: #15173F;         /* glow at the top of the sky */
     --pearl: #F3F1F8;        /* text, like the star */
-    --mist: #A5A7C4;         /* secondary text */
-    --hairline: rgba(243, 241, 248, 0.10);
+    --mist: #9EA1C0;         /* quieter text */
+    --hairline: rgba(243, 241, 248, 0.09);
     --rose: #FFC9DC; --aqua: #BFEAFF; --lilac: #DCCEFF; --champagne: #FFE7C4;  /* the pearl rim */
     --display: "Fraunces", ui-serif, Georgia, serif;
     --text: "Geist", ui-sans-serif, -apple-system, system-ui, sans-serif;
+    --wrap: min(1120px, 100% - 48px);
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
   body {
-    margin: 0;
-    background:
-      radial-gradient(1200px 520px at 50% -120px, var(--dusk), transparent 70%),
-      var(--night);
-    color: var(--pearl);
+    margin: 0; background: var(--night); color: var(--pearl);
     font: 400 17px/1.6 var(--text);
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
   }
-  /* A quiet star field: fixed dots, no motion. */
-  body::before {
-    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .55;
-    background-image:
-      radial-gradient(1px 1px at 12% 22%, #fff9, transparent 60%),
-      radial-gradient(1px 1px at 82% 14%, #fff8, transparent 60%),
-      radial-gradient(1.5px 1.5px at 68% 38%, #fff6, transparent 60%),
-      radial-gradient(1px 1px at 26% 64%, #fff5, transparent 60%),
-      radial-gradient(1px 1px at 90% 72%, #fff6, transparent 60%),
-      radial-gradient(1.5px 1.5px at 8% 88%, #fff4, transparent 60%),
-      radial-gradient(1px 1px at 48% 92%, #fff5, transparent 60%),
-      radial-gradient(1px 1px at 36% 8%, #fff7, transparent 60%);
-  }
+  img { display: block; max-width: 100%; height: auto; }
   a { color: inherit; }
-  :focus-visible { outline: 2px solid var(--aqua); outline-offset: 4px; border-radius: 8px; }
+  :focus-visible { outline: 2px solid var(--aqua); outline-offset: 4px; border-radius: 10px; }
 
-  /* ── The screen's top edge: menu bar + notch + Nova ───────────── */
-  .screen-top { position: relative; height: 150px; }
-  .menubar {
-    position: absolute; inset: 0 0 auto 0; height: 32px;
-    display: flex; align-items: center; justify-content: space-between; padding: 0 18px;
-    background: rgba(255,255,255,.04); border-bottom: 1px solid var(--hairline);
-    font: 500 13px/1 var(--text); color: rgba(243,241,248,.55);
+  .display {
+    font-family: var(--display); font-weight: 400;
+    font-variation-settings: "SOFT" 100, "opsz" 144; letter-spacing: -0.02em;
   }
-  .menubar span + span { margin-left: 18px; }
-  .island {
-    position: absolute; top: -7px; left: 50%; transform: translateX(-50%);
-    width: 317px; height: 125px;            /* the open greeting, 1x */
-  }
-  .island img { position: absolute; top: 0; left: 50%; transform: translateX(-50%); display: block; }
-  .island .closed { width: 273px; }
-  .island .open {
-    width: 317px;
-    clip-path: inset(0 22% 76% 22% round 0 0 18px 18px);
-    opacity: 0;
-    animation: open 900ms cubic-bezier(.2,.9,.25,1.08) 900ms forwards;
-  }
-  .island .closed { animation: fade 300ms ease 1000ms forwards; }
-  @keyframes open {
-    to { clip-path: inset(0 0 0 0 round 0 0 0 0); opacity: 1; }
-  }
-  @keyframes fade { to { opacity: 0; } }
 
-  /* ── Hero ─────────────────────────────────────────────────────── */
-  main { width: min(1080px, 100% - 32px); margin: 0 auto; }
-  .hero { text-align: center; padding: 72px 0 112px; }
-  h1 {
-    font: 400 clamp(44px, 7.4vw, 88px)/1.02 var(--display);
-    font-variation-settings: "SOFT" 100, "opsz" 144;
-    letter-spacing: -0.02em;
-    margin: 0 auto; max-width: 13ch;
-  }
-  .lede { color: var(--mist); max-width: 34em; margin: 26px auto 40px; font-size: 19px; }
+  /* ── Download pill (shared) ───────────────────────────────────── */
   .download {
-    position: relative; display: inline-flex; align-items: center; gap: 12px;
-    padding: 17px 30px 17px 24px; border-radius: 999px;
-    color: #0C0D24; text-decoration: none; font: 600 17px/1 var(--text);
-    background: var(--pearl);
-    box-shadow: 0 10px 40px -10px rgba(191,234,255,.45), inset 0 0 0 1px rgba(255,255,255,.6);
-    isolation: isolate; overflow: hidden;
+    position: relative; display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 28px 16px 22px; border-radius: 999px;
+    color: #0C0D24; text-decoration: none; font: 600 16px/1 var(--text);
+    background: var(--pearl); isolation: isolate; overflow: hidden;
+    box-shadow: 0 12px 44px -12px rgba(191,234,255,.5), inset 0 0 0 1px rgba(255,255,255,.6);
     transition: transform .2s ease, box-shadow .2s ease;
   }
-  /* The pearl sheen: the same rim colours as Nova, turning slowly under the surface. */
+  /* the pearl sheen: Nova's rim colours turning slowly under the surface */
   .download::before {
     content: ""; position: absolute; inset: -60%; z-index: -1;
     background: conic-gradient(from 0deg, var(--rose), var(--aqua), var(--lilac), var(--champagne), var(--rose));
-    opacity: .55; filter: blur(18px);
-    animation: sheen 9s linear infinite;
+    opacity: .55; filter: blur(18px); animation: sheen 9s linear infinite;
   }
-  .download::after { content: ""; position: absolute; inset: 2px; border-radius: 999px; background: rgba(255,255,255,.72); z-index: -1; }
-  .download:hover { transform: translateY(-1px); box-shadow: 0 16px 50px -10px rgba(220,206,255,.55), inset 0 0 0 1px #fff; }
-  .download svg { width: 20px; height: 20px; }
+  .download::after { content: ""; position: absolute; inset: 2px; border-radius: 999px; background: rgba(255,255,255,.74); z-index: -1; }
+  .download:hover { transform: translateY(-1px); box-shadow: 0 18px 54px -12px rgba(220,206,255,.6), inset 0 0 0 1px #fff; }
+  .download svg { width: 18px; height: 18px; }
+  .download.small { padding: 10px 18px 10px 15px; font-size: 14px; gap: 7px; }
+  .download.small svg { width: 15px; height: 15px; }
   @keyframes sheen { to { transform: rotate(1turn); } }
-  .fine { color: var(--mist); font-size: 14px; margin-top: 18px; }
 
-  /* ── Moments ──────────────────────────────────────────────────── */
-  section { padding: 96px 0; border-top: 1px solid var(--hairline); }
-  h2 {
-    font: 400 clamp(32px, 4.4vw, 48px)/1.08 var(--display);
-    font-variation-settings: "SOFT" 100, "opsz" 96;
-    letter-spacing: -0.015em; margin: 0 0 14px; max-width: 18ch;
+  /* ── Slim bar that appears after the hero ─────────────────────── */
+  .bar {
+    position: fixed; inset: 0 0 auto; z-index: 10; height: 64px;
+    display: flex; align-items: center;
+    background: rgba(6,7,26,.66); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-bottom: 1px solid var(--hairline);
+    transform: translateY(-100%); transition: transform .45s cubic-bezier(.2,.8,.2,1);
   }
-  .intro { color: var(--mist); max-width: 36em; margin: 0 0 56px; }
-  .moments { display: grid; grid-template-columns: repeat(2, 1fr); gap: 56px 40px; }
-  .moment figure { margin: 0; }
-  .shot {
-    display: grid; place-items: center; min-height: 220px; padding: 28px 16px 20px;
-    border-radius: 22px;
-    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+  .bar.show { transform: none; }
+  .bar .inner { width: var(--wrap); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 600 16px/1 var(--text); text-decoration: none; }
+  .brand img { width: 28px; height: 28px; }
+
+  /* ── Hero ─────────────────────────────────────────────────────── */
+  .hero {
+    min-height: 100svh; display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 0 24px 72px; position: relative;
+    background: radial-gradient(1100px 600px at 50% -160px, var(--dusk), transparent 70%);
+  }
+  .menubar {
+    align-self: stretch; height: 32px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; margin: 0 -24px; position: relative; z-index: 1;
+    background: rgba(255,255,255,.035); border-bottom: 1px solid var(--hairline);
+    font: 500 13px/1 var(--text); color: rgba(243,241,248,.5);
+  }
+  .menubar span + span { margin-left: 18px; }
+  .island { position: relative; width: 317px; height: 125px; margin-top: -39px; z-index: 2; transform: scale(1.15); transform-origin: top center; }
+  .island img { position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+  .island .closed { width: 273px; animation: fade 300ms ease 1000ms forwards; }
+  .island .open {
+    width: 317px; opacity: 0;
+    clip-path: inset(0 22% 76% 22% round 0 0 18px 18px);
+    animation: open 900ms cubic-bezier(.2,.9,.25,1.08) 900ms forwards;
+  }
+  @keyframes open { to { clip-path: inset(0 0 0 0 round 0); opacity: 1; } }
+  @keyframes fade { to { opacity: 0; } }
+
+  .hero .copy { margin: auto 0; padding-top: 80px; }
+  h1 { font-size: clamp(48px, 8.4vw, 112px); line-height: .98; margin: 0 auto; max-width: 12ch; }
+  .lede { color: var(--mist); font-size: clamp(18px, 1.6vw, 21px); max-width: 30em; margin: 28px auto 44px; }
+  .fine { color: var(--mist); font-size: 13.5px; margin: 18px 0 0; }
+
+  /* ── Chapters: one screenshot, one headline, one sentence ─────── */
+  .chapter {
+    width: var(--wrap); margin: 0 auto; padding: 120px 0;
+    display: grid; grid-template-columns: 1.15fr 1fr; gap: 72px; align-items: center;
+  }
+  .chapter.flip { grid-template-columns: 1fr 1.15fr; }
+  .chapter.flip .stage { order: 2; }
+  .stage {
+    position: relative; border-radius: 28px; padding: 64px 32px 56px;
+    display: grid; place-items: center; overflow: hidden;
+    background:
+      radial-gradient(500px 240px at 50% 0%, rgba(220,206,255,.10), transparent 70%),
+      linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012));
     border: 1px solid var(--hairline);
-    position: relative; overflow: hidden;
   }
   /* each screenshot hangs from a strip of "screen top", like on a real Mac */
-  .shot::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 18px; background: rgba(0,0,0,.35); }
-  .shot img { position: relative; max-width: 100%; height: auto; display: block; margin-top: -10px; }
-  figcaption { margin-top: 16px; }
-  figcaption strong { display: block; font-weight: 600; font-size: 17px; }
-  figcaption span { color: var(--mist); font-size: 15px; }
+  .stage::before { content: ""; position: absolute; inset: 0 0 auto; height: 24px; background: rgba(0,0,0,.42); }
+  .stage img { position: relative; margin-top: -40px; }
+  .chapter h2 { font-size: clamp(36px, 4.2vw, 56px); line-height: 1.04; margin: 0 0 18px; max-width: 11ch; }
+  .chapter p { color: var(--mist); font-size: 18px; margin: 0; max-width: 24em; }
 
-  /* ── Character ────────────────────────────────────────────────── */
-  .faces { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  .face { text-align: center; }
-  .face img { width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; }
-  .face p { margin: 0; color: var(--mist); font-size: 15px; }
+  /* ── Sections ─────────────────────────────────────────────────── */
+  .section { width: var(--wrap); margin: 0 auto; padding: 120px 0; border-top: 1px solid var(--hairline); }
+  .section h2 { font-size: clamp(36px, 4.2vw, 56px); line-height: 1.04; margin: 0 0 16px; }
+  .section .sub { color: var(--mist); font-size: 18px; max-width: 32em; margin: 0 0 56px; }
+  .centered { text-align: center; }
+  .centered .sub { margin-left: auto; margin-right: auto; }
 
-  /* ── Install ──────────────────────────────────────────────────── */
-  .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; counter-reset: s; }
-  .steps li { counter-increment: s; padding-top: 22px; border-top: 1px solid var(--hairline); }
+  .faces { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .face img { width: 100%; max-width: 240px; margin: 0 auto; }
+  .face p { margin: 0; text-align: center; color: var(--mist); font-size: 14.5px; }
+
+  .start { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; padding: 18px 0; border-top: 1px solid var(--hairline); }
+  .steps li:last-child { border-bottom: 1px solid var(--hairline); }
   .steps li::before {
-    content: counter(s); display: block; margin-bottom: 10px;
-    font: 400 44px/1 var(--display); font-variation-settings: "SOFT" 100;
-    background: linear-gradient(120deg, var(--rose), var(--aqua) 45%, var(--lilac));
+    content: counter(s); font: 400 26px/1.1 var(--display); font-variation-settings: "SOFT" 100;
+    background: linear-gradient(120deg, var(--rose), var(--aqua) 50%, var(--lilac));
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .steps strong { display: block; font-weight: 600; margin-bottom: 4px; }
-  .steps span { color: var(--mist); font-size: 15px; }
+  .steps strong { font-weight: 500; }
+  .steps span { display: block; color: var(--mist); font-size: 15px; }
+  .promise h3 { font-size: 30px; line-height: 1.1; margin: 0 0 14px; }
+  .promise p { color: var(--mist); margin: 0 0 12px; max-width: 30em; }
 
-  .privacy { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
-  .privacy p { color: var(--mist); margin: 0 0 14px; }
-
-  /* ── What Nova does, in plain words ───────────────────────────── */
-  .does { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px 40px; }
-  .does article { max-width: 30ch; }
-  .does svg {
-    width: 30px; height: 30px; margin-bottom: 16px; display: block;
-    stroke: var(--pearl); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
-    filter: drop-shadow(0 0 10px rgba(191,234,255,.35));
-  }
-  .does h3 { font: 600 18px/1.3 var(--text); margin: 0 0 8px; }
-  .does p { color: var(--mist); font-size: 15.5px; margin: 0; }
-
-  /* ── Questions ────────────────────────────────────────────────── */
-  .faq { max-width: 720px; }
+  .faq { max-width: 760px; margin: 0 auto; text-align: left; }
   .faq details { border-top: 1px solid var(--hairline); }
   .faq details:last-child { border-bottom: 1px solid var(--hairline); }
   .faq summary {
-    list-style: none; cursor: pointer; padding: 20px 36px 20px 0; position: relative;
+    list-style: none; cursor: pointer; padding: 22px 40px 22px 0; position: relative;
     font: 500 17px/1.4 var(--text);
   }
   .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after {
-    content: ""; position: absolute; right: 6px; top: 50%; width: 9px; height: 9px; margin-top: -7px;
-    border-right: 1.6px solid var(--mist); border-bottom: 1.6px solid var(--mist);
-    transform: rotate(45deg); transition: transform .25s ease;
+  .faq summary::before, .faq summary::after {
+    content: ""; position: absolute; right: 8px; top: 50%; width: 13px; height: 1.6px; background: var(--mist);
+    transition: transform .3s ease;
   }
-  .faq details[open] summary::after { transform: rotate(-135deg); margin-top: -2px; }
-  .faq details p { color: var(--mist); margin: -6px 0 22px; max-width: 60ch; }
+  .faq summary::after { transform: rotate(90deg); }
+  .faq details[open] summary::after { transform: rotate(0deg); }
+  .faq details p { color: var(--mist); margin: -6px 0 24px; max-width: 60ch; }
 
-  .closing { text-align: center; }
-  .closing h2 { margin: 0 auto 30px; }
-  footer { text-align: center; color: var(--mist); font-size: 13px; padding: 40px 0 56px; border-top: 1px solid var(--hairline); }
+  .closing { padding: 160px 24px 120px; text-align: center; border-top: 1px solid var(--hairline);
+    background: radial-gradient(800px 400px at 50% 100%, rgba(220,206,255,.10), transparent 70%); }
+  .closing img { width: 140px; margin: 0 auto 8px; }
+  .closing h2 { font-size: clamp(40px, 5.4vw, 72px); line-height: 1.02; margin: 0 auto 40px; max-width: 12ch; }
+  footer { width: var(--wrap); margin: 0 auto; padding: 32px 0 48px; display: flex; justify-content: space-between; color: var(--mist); font-size: 13px; border-top: 1px solid var(--hairline); }
+  footer a { text-decoration: none; }
+  footer a:hover { color: var(--pearl); }
 
-  @media (max-width: 760px) {
+  @media (max-width: 860px) {
     .menubar .menus { display: none; }
-    .screen-top { height: 140px; }
-    .island { transform: translateX(-50%) scale(.9); transform-origin: top center; }
-    .hero { padding: 48px 0 80px; }
-    .moments, .privacy, .steps, .does { grid-template-columns: 1fr; gap: 40px; }
-    .does article { max-width: none; }
+    .menubar { justify-content: flex-end; }
+    .island { transform: scale(1); }
+    .hero .copy { padding-top: 56px; }
+    .chapter, .chapter.flip { grid-template-columns: 1fr; gap: 36px; padding: 80px 0; }
+    .chapter.flip .stage { order: 0; }
+    .stage { padding: 52px 16px 40px; }
+    .section { padding: 88px 0; }
     .faces { grid-template-columns: repeat(2, 1fr); }
-    section { padding: 72px 0; }
+    .start { grid-template-columns: 1fr; gap: 56px; }
+    .closing { padding: 112px 24px 88px; }
+    footer { flex-direction: column; gap: 8px; text-align: center; }
   }
   @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     .island .open { animation: none; opacity: 1; clip-path: none; }
     .island .closed { animation: none; opacity: 0; }
     .download::before { animation: none; }
+    .bar { transition: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="screen-top" aria-hidden="true">
-  <div class="menubar">
+<nav class="bar" id="bar" aria-label="Nova">
+  <div class="inner">
+    <a class="brand" href="#top"><img src="assets/star-plain-cut.png" alt=""> Nova</a>
+    <a class="download small" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg>
+      Download
+    </a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="menubar" aria-hidden="true">
     <div class="menus"><span>Finder</span><span>File</span><span>Edit</span><span>View</span><span>Go</span></div>
     <div id="clock">9:41</div>
   </div>
-  <div class="island">
+  <div class="island" aria-hidden="true">
     <img class="closed" src="assets/island-closed.png" alt="">
     <img class="open" src="assets/island-greeting.png" alt="">
   </div>
-</div>
-
-<main>
-  <header class="hero">
-    <h1>A little star that lives in your notch.</h1>
-    <p class="lede">Nova keeps time on your focus and your breaks, greets you when you sit down, and taps you on the shoulder when a meeting is coming or an AI agent needs you.</p>
-    <a class="download" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
+  <div class="copy">
+    <h1 class="display">A little star that lives in your notch.</h1>
+    <p class="lede">Nova looks after your time, your breaks and your AI tools, quietly, from the top of your screen.</p>
+    <a class="download" id="hero-download" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg>
       Download for Mac
     </a>
-    <p class="fine">Free. For MacBooks with a notch, macOS 14 or later.</p>
-  </header>
+    <p class="fine">Free, for MacBooks with a notch on macOS 14 or later.</p>
+  </div>
+</header>
 
-  <section aria-labelledby="what">
-    <h2 id="what">Here's what Nova does.</h2>
-    <p class="intro">You don't start or stop anything. Nova sits beside the notch, keeps an eye on your day, and speaks up only when something matters.</p>
-    <div class="does">
-      <article>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></svg>
-        <h3>Counts your work and your breaks</h3>
-        <p>It notices when you're working and when you're taking a break, with no timer to start. After an hour and a half of focus it suggests a pause, and after a full day it tells you to stop.</p>
-      </article>
-      <article>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M5.6 5.6l1.4 1.4M3 12h2M19 12h2M17 7l1.4-1.4"/><path d="M7 16a5 5 0 0 1 10 0M3 19h18"/></svg>
-        <h3>Starts and ends your day with you</h3>
-        <p>In the morning it says hello and lists your meetings and reminders. In the evening it sums up your day and shows what's first tomorrow.</p>
-      </article>
-      <article>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
-        <h3>Gets you to things on time</h3>
-        <p>It reads your Calendar and nudges you an hour before a meeting and again fifteen minutes before, with a Join button for video calls. Your reminders show up when they're due.</p>
-      </article>
-      <article>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7Z"/><path d="M19 16.5c.2 1.3.9 2 2.2 2.2-1.3.2-2 .9-2.2 2.2-.2-1.3-.9-2-2.2-2.2 1.3-.2 2-.9 2.2-2.2Z"/></svg>
-        <h3>Looks after your AI tools</h3>
-        <p>If you use Claude Code, Codex, Cursor or the Claude app, Nova tells you when they finish or need you, and lets you answer right from the notch.</p>
-      </article>
-      <article>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c1 4.5 3 6.5 8 7.5-5 1-7 3-8 7.5-1-4.5-3-6.5-8-7.5 5-1 7-3 8-7.5Z"/><circle cx="10.2" cy="10.8" r=".6"/><circle cx="13.8" cy="10.8" r=".6"/></svg>
-        <h3>Has a little personality</h3>
-        <p>The star breathes, blinks and follows your cursor. It wears 3D glasses when you watch something and a headset when you play.</p>
-      </article>
-      <article>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
-        <h3>Stays out of your way</h3>
-        <p>It opens only as wide as it needs to and slides aside when you reach for a menu. Everything it sees stays on your Mac.</p>
-      </article>
+<main>
+  <section class="chapter">
+    <div class="stage"><img src="assets/island-clock.png" width="314" alt="Nova's island showing today's work time and a progress ring"></div>
+    <div>
+      <h2 class="display">Your day, counted for you.</h2>
+      <p>You never start a timer. Nova knows when you're working and when you're on a break, nudges you to rest after ninety minutes, and tells you to stop after a full day.</p>
     </div>
   </section>
 
-  <section aria-labelledby="moments">
-    <h2 id="moments">This is what it looks like.</h2>
-    <p class="intro">A few of the moments you'll see in your notch. Each one opens for a few seconds, then closes again.</p>
-    <div class="moments">
-      <figure class="moment">
-        <div class="shot"><img src="assets/island-calendar.png" width="341" alt="Nova's island showing: Design review, in 15 minutes, get ready, with a Join button"></div>
-        <figcaption><strong>Meetings, before they sneak up on you</strong><span>An hour ahead to keep it in mind, fifteen minutes ahead to get ready, and a Join button for the call.</span></figcaption>
-      </figure>
-      <figure class="moment">
-        <div class="shot"><img src="assets/island-clock.png" width="273" alt="Nova's island showing today's work time with a progress ring"></div>
-        <figcaption><strong>Your hours, without a timer</strong><span>Work and breaks are counted on their own. After ninety minutes of focus, Nova suggests a break.</span></figcaption>
-      </figure>
-      <figure class="moment">
-        <div class="shot"><img src="assets/island-approval.png" width="393" alt="Nova's island asking to allow Claude Code to run npm run build and npm test"></div>
-        <figcaption><strong>Your AI agents, answered from anywhere</strong><span>Claude Code, Codex and Cursor report in. Approve a command without switching windows.</span></figcaption>
-      </figure>
-      <figure class="moment">
-        <div class="shot"><img src="assets/island-question.png" width="425" alt="Nova's island showing a question from Claude with two options to choose from"></div>
-        <figcaption><strong>Questions, picked in a click</strong><span>When Claude asks you to choose, the options appear right in the notch.</span></figcaption>
-      </figure>
+  <section class="chapter flip">
+    <div class="stage"><img src="assets/island-calendar.png" width="392" alt="Nova's island: Design review, in 15 minutes, get ready, with a Join button"></div>
+    <div>
+      <h2 class="display">Never late again.</h2>
+      <p>A heads-up an hour before every meeting, another fifteen minutes before, and a Join button when the call starts. Your reminders show up right on time.</p>
     </div>
   </section>
 
-  <section aria-labelledby="character">
-    <h2 id="character">And it has a personality.</h2>
-    <p class="intro">Nova breathes, follows your cursor and hops when you come back. Put on a video and it reaches for its 3D glasses. Start a game and the headset comes out.</p>
+  <section class="chapter">
+    <div class="stage"><img src="assets/island-greeting.png" width="365" alt="Nova's island saying Good evening, Alex"></div>
+    <div>
+      <h2 class="display">Good morning, good night.</h2>
+      <p>It greets you by name, starts the day with your meetings and reminders, and ends it with a short wrap-up so you know when to call it a day.</p>
+    </div>
+  </section>
+
+  <section class="chapter flip">
+    <div class="stage"><img src="assets/island-approval.png" width="452" alt="Nova's island asking to allow Claude Code to run npm run build and npm test"></div>
+    <div>
+      <h2 class="display">Your AI tools, answered.</h2>
+      <p>Claude Code, Codex, Cursor and the Claude app tell Nova when they finish or need you. Approve and answer from the notch, without switching windows.</p>
+    </div>
+  </section>
+
+  <section class="section centered">
+    <h2 class="display">With a little personality.</h2>
+    <p class="sub">It breathes, follows your cursor and hops when you come back. Glasses on for a film, headset on for a game.</p>
     <div class="faces">
       <div class="face"><img src="assets/star-plain-cut.png" alt="Nova, the pearl star, looking at you"><p>Curious</p></div>
       <div class="face"><img src="assets/star-happy-cut.png" alt="Nova smiling with happy closed eyes"><p>Glad you're back</p></div>
-      <div class="face"><img src="assets/star-YouTube-cut.png" alt="Nova wearing 3D glasses"><p>Watching something</p></div>
+      <div class="face"><img src="assets/star-YouTube-cut.png" alt="Nova wearing 3D glasses"><p>Watching</p></div>
       <div class="face"><img src="assets/star-Game-cut.png" alt="Nova wearing a gaming headset"><p>Playing</p></div>
     </div>
   </section>
 
-  <section aria-labelledby="install">
-    <h2 id="install">Installed in a minute.</h2>
-    <p class="intro">Nova is signed and checked by Apple, so it opens like any other app.</p>
-    <ol class="steps">
-      <li><strong>Download Nova</strong><span>Click the button above to get the installer.</span></li>
-      <li><strong>Drag it to Applications</strong><span>Open the file you downloaded, then drag Nova into the Applications folder.</span></li>
-      <li><strong>Open Nova</strong><span>A short setup asks your name and what you'd like it to connect to. That's it.</span></li>
-    </ol>
-  </section>
-
-  <section aria-labelledby="privacy">
-    <div class="privacy">
-      <h2 id="privacy">Everything stays on your Mac.</h2>
+  <section class="section">
+    <div class="start">
       <div>
-        <p>Nova looks at which app is in front and your calendar only to understand your day. It doesn't send any of it anywhere, and it has no account to sign in to.</p>
-        <p>You choose what it connects to, and you can switch each one off in Settings.</p>
+        <h2 class="display">Ready in a minute.</h2>
+        <ol class="steps">
+          <li><div><strong>Download Nova</strong><span>It's signed and checked by Apple.</span></div></li>
+          <li><div><strong>Drag it into Applications</strong><span>Open the file and drop Nova in the folder.</span></div></li>
+          <li><div><strong>Open it</strong><span>A short setup asks your name and what to connect.</span></div></li>
+        </ol>
+      </div>
+      <div class="promise">
+        <h3 class="display">Everything stays on your Mac.</h3>
+        <p>Nova reads which app is in front and your calendar only to understand your day. Nothing is sent anywhere, and there's no account to make.</p>
+        <p>You choose what it connects to, and you can switch any of it off in Settings.</p>
       </div>
     </div>
   </section>
 
-  <section aria-labelledby="questions">
-    <h2 id="questions">Questions people ask.</h2>
+  <section class="section centered">
+    <h2 class="display">Questions.</h2>
+    <p class="sub">The short answers.</p>
     <div class="faq">
-      <details>
-        <summary>Is Nova free?</summary>
-        <p>Yes. Download it and use everything.</p>
-      </details>
-      <details>
-        <summary>Which Macs does it work on?</summary>
-        <p>MacBook Air and MacBook Pro models with a notch (from late 2021 onwards), running macOS 14 Sonoma or later.</p>
-      </details>
-      <details>
-        <summary>Do I have to set anything up?</summary>
-        <p>Barely. The first time you open Nova, a short setup asks your name and which apps you'd like it to connect to. You can skip anything and change it later.</p>
-      </details>
-      <details>
-        <summary>Why does it ask for permissions?</summary>
-        <p>Accessibility lets Nova tell YouTube from your work in the browser and notice when Claude replies. Calendar and Reminders let it remind you about meetings and to-dos. Each one is optional, and Nova works without them.</p>
-      </details>
-      <details>
-        <summary>Do I need to use AI tools?</summary>
-        <p>No. Nova is a focus, break and calendar companion for anyone. The AI features simply switch on if you use Claude Code, Codex, Cursor or the Claude app.</p>
-      </details>
-      <details>
-        <summary>How do I open Settings or quit Nova?</summary>
-        <p>Right-click the notch. You'll find Settings and Quit there.</p>
-      </details>
-      <details>
-        <summary>How do I remove it?</summary>
-        <p>Right-click the notch and choose Quit, then drag Nova from your Applications folder to the Bin.</p>
-      </details>
+      <details><summary>Is Nova free?</summary><p>Yes. Download it and use everything.</p></details>
+      <details><summary>Which Macs does it work on?</summary><p>MacBook Air and MacBook Pro models with a notch (from late 2021 onwards), running macOS 14 Sonoma or later.</p></details>
+      <details><summary>Do I need to set anything up?</summary><p>Barely. The first time you open Nova, a short setup asks your name and which apps to connect. Skip anything and change it later.</p></details>
+      <details><summary>Why does it ask for permissions?</summary><p>Accessibility lets Nova tell YouTube from your work in the browser and notice when Claude replies. Calendar and Reminders let it remind you about meetings and to-dos. Each one is optional.</p></details>
+      <details><summary>Do I need to use AI tools?</summary><p>No. Nova is a focus, break and calendar companion for anyone. The AI features switch on only if you use Claude Code, Codex, Cursor or the Claude app.</p></details>
+      <details><summary>How do I open Settings or quit?</summary><p>Right-click the notch. Settings and Quit are there.</p></details>
+      <details><summary>How do I remove it?</summary><p>Right-click the notch and choose Quit, then drag Nova from Applications to the Bin.</p></details>
     </div>
-  </section>
-
-  <section class="closing">
-    <h2>Give your notch a little company.</h2>
-    <a class="download" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg>
-      Download for Mac
-    </a>
-    <p class="fine">Version 0.3.0</p>
   </section>
 </main>
 
-<footer>Nova is made for people who work a little too long.</footer>
+<section class="closing">
+  <img src="assets/star-happy-cut.png" alt="">
+  <h2 class="display">Give your notch a little company.</h2>
+  <a class="download" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg>
+    Download for Mac
+  </a>
+  <p class="fine">Version 0.3.0</p>
+</section>
+
+<footer>
+  <span>Nova, for people who work a little too long.</span>
+  <a href="https://github.com/Yarielito06/nova-releases/releases">All versions</a>
+</footer>
 
 <script>
-  // The menu bar clock shows the visitor's own time.
-  const c = document.getElementById('clock');
-  const tick = () => c.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  // Menu bar clock: the visitor's own time.
+  const clock = document.getElementById('clock');
+  const tick = () => clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   tick(); setInterval(tick, 30000);
+
+  // The slim bar slides in once the hero's Download button scrolls away.
+  const bar = document.getElementById('bar');
+  new IntersectionObserver(([e]) => bar.classList.toggle('show', !e.isIntersecting), { threshold: 0 })
+    .observe(document.getElementById('hero-download'));
 </script>
 </body>
 </html>
