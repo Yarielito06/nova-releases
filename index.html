@@ -13,7 +13,8 @@
 <link rel="icon" href="assets/star-plain-cut.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,0..100&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Apple devices use their own SF Pro (system font); everyone else gets Inter. -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --night: #05061A;
@@ -22,8 +23,8 @@
     --mist: #9EA1C0;
     --hairline: rgba(243, 241, 248, 0.09);
     --rose: #FFC9DC; --aqua: #BFEAFF; --lilac: #DCCEFF; --champagne: #FFE7C4;
-    --display: "Fraunces", ui-serif, Georgia, serif;
-    --text: "Geist", ui-sans-serif, -apple-system, system-ui, sans-serif;
+    --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    --text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Helvetica Neue", Arial, sans-serif;
     --wrap: min(1120px, 100% - 48px);
   }
   * { box-sizing: border-box; }
@@ -32,7 +33,12 @@
   img { display: block; max-width: 100%; height: auto; }
   a { color: inherit; }
   :focus-visible { outline: 2px solid var(--aqua); outline-offset: 4px; border-radius: 10px; }
-  .display { font-family: var(--display); font-weight: 400; font-variation-settings: "SOFT" 100, "opsz" 144; letter-spacing: -0.02em; }
+  /* Apple-style headlines: semibold, tight, a whisper of silver at the bottom. */
+  .display {
+    font-family: var(--display); font-weight: 600; letter-spacing: -0.035em;
+    background: linear-gradient(180deg, #FFFFFF 30%, #C9CAD9 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
 
   /* ── Download pill ────────────────────────────────────────────── */
   .download {
@@ -69,31 +75,48 @@
   .intro h1 { font-size: clamp(44px, 7vw, 100px); line-height: .98; margin: 0 auto; max-width: 13ch; }
   .intro p { color: var(--mist); font-size: clamp(17px, 1.5vw, 20px); max-width: 30em; margin: 22px auto 0; }
 
-  /* the MacBook, built in 3D */
+  /* the MacBook (our own drawing, in Space Black), built in 3D */
   .mac {
     --w: 860px;
+    --t: calc(var(--w) * .011);          /* lid thickness */
     position: absolute; left: 50%; top: 0; width: var(--w); margin-left: calc(var(--w) / -2);
     transform-style: preserve-3d; transform-origin: 50% 0; will-change: transform;
   }
-  .lid {
-    position: relative; width: var(--w); aspect-ratio: 1.55;
-    border-radius: calc(var(--w) * .028) calc(var(--w) * .028) 6px 6px;
-    background: linear-gradient(180deg, #2a2b31, #17181c);
-    padding: calc(var(--w) * .013) calc(var(--w) * .013) calc(var(--w) * .03);
-    box-shadow: inset 0 0 0 1.5px #4a4b52, inset 0 0 0 3px #0b0b0e, 0 40px 120px -30px rgba(120,110,255,.25);
-    transform-style: preserve-3d;
+  .lid { position: relative; width: var(--w); aspect-ratio: 1.55; transform-style: preserve-3d;
+    transform-origin: 50% 100%; transform: rotateX(var(--tilt, 9deg)); }
+  .lid > * { position: absolute; inset: 0; border-radius: calc(var(--w) * .03) calc(var(--w) * .03) calc(var(--w) * .008) calc(var(--w) * .008); backface-visibility: hidden; }
+  .lid-front {
+    background: #0A0A0C; padding: calc(var(--w) * .0125) calc(var(--w) * .0125) calc(var(--w) * .032);
+    box-shadow: inset 0 0 0 1px #3A3B42, inset 0 0 0 calc(var(--w) * .0035) #1C1D22;
   }
+  /* the word under the screen, like a real bezel */
+  .lid-front::after { content: "Nova"; position: absolute; left: 0; right: 0; bottom: calc(var(--w) * .009);
+    text-align: center; font-family: var(--text); font-weight: 500; line-height: 1; font-size: calc(var(--w) * .0105); letter-spacing: .02em; color: #5A5B66; }
+  .lid-back {
+    transform: translateZ(calc(var(--t) * -1)) rotateY(180deg);
+    background:
+      radial-gradient(60% 50% at 30% 20%, rgba(255,255,255,.10), transparent 60%),
+      linear-gradient(160deg, #3A3C44, #222329 45%, #17181D);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    display: grid; place-items: center;
+  }
+  .lid-back svg { width: calc(var(--w) * .085); height: auto; filter: drop-shadow(0 0 calc(var(--w) * .02) rgba(220,206,255,.55)); }
+  .lid-top { backface-visibility: visible !important; inset: 0 0 auto 0; height: var(--t); border-radius: 0; transform-origin: 50% 0; transform: rotateX(-90deg);
+    background: linear-gradient(90deg, #1E1F24, #4B4D56 50%, #1E1F24); }
   .screen {
     position: relative; width: 100%; height: 100%; overflow: hidden;
-    border-radius: calc(var(--w) * .014) calc(var(--w) * .014) 2px 2px;
+    border-radius: calc(var(--w) * .016) calc(var(--w) * .016) 2px 2px;
     background:
       radial-gradient(60% 70% at 18% 85%, rgba(120, 80, 220, .55), transparent 70%),
       radial-gradient(55% 60% at 85% 75%, rgba(40, 170, 220, .45), transparent 70%),
       radial-gradient(50% 50% at 60% 20%, rgba(255, 150, 190, .22), transparent 70%),
       linear-gradient(160deg, #1b1d52, #0c0d2c 60%, #10133d);
   }
-  .screen::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(115deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 38%); }
+  .screen::after { /* glass glare, slides as the laptop turns */
+    content: ""; position: absolute; inset: -20%; pointer-events: none;
+    background: linear-gradient(115deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.09) 42%, rgba(255,255,255,0) 54%);
+    transform: translateX(var(--glare, 0%));
+  }
   .menu {
     position: absolute; inset: 0 0 auto; height: calc(var(--pt) * 33px); display: flex; align-items: center; justify-content: space-between;
     padding: 0 calc(var(--pt) * 14px); background: rgba(10,10,30,.35);
@@ -105,29 +128,46 @@
   .isl { position: absolute; top: calc(var(--pt) * -14px); left: 50%; max-width: none; transform: translateX(-50%) scale(.96); opacity: 0;
     transition: opacity .45s ease, transform .55s cubic-bezier(.2,.9,.25,1.1); }
   .isl.on { opacity: 1; transform: translateX(-50%) scale(1); }
+
+  /* the deck */
   .base {
-    position: absolute; left: -4%; width: 108%; top: 100%; height: calc(var(--w) * .66);
-    transform-origin: 50% 0; transform: rotateX(90deg);
-    border-radius: 4px 4px calc(var(--w) * .03) calc(var(--w) * .03);
-    background: linear-gradient(180deg, #c9cbd2, #a9abb4 70%, #9b9da6);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
+    position: absolute; left: -3.5%; width: 107%; top: 100%; height: calc(var(--w) * .68);
+    transform-origin: 50% 0; transform: rotateX(90deg); transform-style: preserve-3d;
   }
-  .keys { position: absolute; left: 8%; right: 8%; top: 7%; height: 46%; border-radius: 10px;
+  .deck {
+    position: absolute; inset: 0; border-radius: calc(var(--w) * .006) calc(var(--w) * .006) calc(var(--w) * .035) calc(var(--w) * .035);
     background:
-      repeating-linear-gradient(90deg, #1d1e22 0 6%, #8f919a 6% 6.66%),
-      #1d1e22;
-    -webkit-mask: repeating-linear-gradient(180deg, #000 0 15%, transparent 15% 16.66%);
-            mask: repeating-linear-gradient(180deg, #000 0 15%, transparent 15% 16.66%);
-    opacity: .92; }
-  .trackpad { position: absolute; left: 32%; right: 32%; top: 58%; height: 34%; border-radius: 12px;
-    background: linear-gradient(#babcc4, #aeb0b8); box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+      radial-gradient(70% 60% at 50% 0%, rgba(255,255,255,.10), transparent 70%),
+      linear-gradient(180deg, #34363E, #26272D 60%, #1F2025);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 1px rgba(255,255,255,.06);
+  }
+  .hinge { position: absolute; left: 12%; right: 12%; top: 0; height: 2.2%; border-radius: 0 0 6px 6px; background: linear-gradient(#0C0C0F, #1A1B20); }
+  .keys {
+    position: absolute; left: 14%; right: 14%; top: 8%; height: 45%; padding: .9%;
+    border-radius: calc(var(--w) * .008); background: #121317; box-shadow: inset 0 2px 6px rgba(0,0,0,.6);
+    display: grid; grid-template-rows: .62fr repeat(5, 1fr); gap: 3.2%;
+  }
+  .row { display: grid; gap: 1%; }
+  .row i { display: block; border-radius: 3px; background: linear-gradient(#1F2025, #18191D); box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 1px 0 rgba(0,0,0,.6); }
+  .grille { position: absolute; top: 8%; width: 9%; height: 45%;
+    background-image: radial-gradient(circle, #0E0F12 34%, transparent 38%); background-size: 6px 6px; opacity: .9; }
+  .grille.l { left: 3.5%; } .grille.r { right: 3.5%; }
+  .trackpad { position: absolute; left: 31%; right: 31%; top: 58%; height: 35%; border-radius: calc(var(--w) * .01);
+    background: linear-gradient(180deg, #2D2F36, #25262C); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07), inset 0 1px 0 rgba(255,255,255,.1); }
+  .lip { position: absolute; left: 0; right: 0; top: 100%; height: calc(var(--w) * .012); transform-origin: 50% 0;
+    transform: rotateX(-90deg);
+    background: linear-gradient(90deg, #15161A, #3E4048 50%, #15161A); border-radius: 0 0 6px 6px; }
+  .scoop { position: absolute; left: 50%; bottom: 0; width: 12%; height: 1.4%; transform: translateX(-50%);
+    border-radius: 40px 40px 0 0; background: #121317; }
+  .glow { position: absolute; inset: -12% -14%; transform: translateZ(-4px);
+    background: radial-gradient(50% 50% at 50% 50%, rgba(140,120,255,.22), transparent 70%); filter: blur(30px); }
 
   /* captions that change with the island */
   .captions { position: absolute; left: 0; right: 0; bottom: 7vh; z-index: 4; pointer-events: none; }
   .cap { position: absolute; left: 50%; bottom: 0; width: min(760px, 100% - 48px); transform: translate(-50%, 18px); opacity: 0; text-align: center;
     transition: opacity .5s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
   .cap.on { opacity: 1; transform: translate(-50%, 0); }
-  .cap h2 { font-size: clamp(34px, 4.6vw, 64px); line-height: 1.02; margin: 0 0 12px; text-shadow: 0 6px 40px rgba(5,6,26,.8); }
+  .cap h2 { font-size: clamp(34px, 4.6vw, 64px); line-height: 1.04; margin: 0 0 12px; filter: drop-shadow(0 6px 30px rgba(5,6,26,.85)); }
   .cap p { color: #C9CAE0; font-size: clamp(16px, 1.4vw, 19px); margin: 0 auto; max-width: 32em; text-shadow: 0 2px 20px rgba(5,6,26,.9); }
   .shade { position: absolute; inset: auto 0 0; height: 48vh; z-index: 3; pointer-events: none;
     background: linear-gradient(180deg, transparent, rgba(5,6,26,.88) 70%); opacity: 0; transition: opacity .5s ease; }
@@ -152,7 +192,7 @@
   .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
   .steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; padding: 18px 0; border-top: 1px solid var(--hairline); }
   .steps li:last-child { border-bottom: 1px solid var(--hairline); }
-  .steps li::before { content: counter(s); font: 400 26px/1.1 var(--display); font-variation-settings: "SOFT" 100;
+  .steps li::before { content: counter(s); font: 600 24px/1.15 var(--display); letter-spacing: -0.02em;
     background: linear-gradient(120deg, var(--rose), var(--aqua) 50%, var(--lilac)); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .steps strong { font-weight: 500; }
   .steps span { display: block; color: var(--mist); font-size: 15px; }
@@ -206,18 +246,37 @@
 
     <div class="mac" id="mac" aria-hidden="true">
       <div class="lid">
-        <div class="screen" id="screen">
-          <div class="menu"><div><span>Finder</span><span>File</span><span>Edit</span><span>View</span><span>Go</span></div><div id="clock">9:41</div></div>
-          <div class="notch"></div>
-          <img class="isl on" data-step="0" data-w="273" src="assets/island-closed.png" alt="">
-          <img class="isl" data-step="1" data-w="317" src="assets/island-greeting.png" alt="">
-          <img class="isl" data-step="2" data-w="341" src="assets/island-calendar.png" alt="">
-          <img class="isl" data-step="3" data-w="273" src="assets/island-clock.png" alt="">
-          <img class="isl" data-step="4" data-w="393" src="assets/island-approval.png" alt="">
-          <img class="isl" data-step="5" data-w="425" src="assets/island-question.png" alt="">
+        <div class="lid-front">
+          <div class="screen" id="screen">
+            <div class="menu"><div><span>Finder</span><span>File</span><span>Edit</span><span>View</span><span>Go</span></div><div id="clock">9:41</div></div>
+            <div class="notch"></div>
+            <img class="isl on" data-step="0" data-w="273" src="assets/island-closed.png" alt="">
+            <img class="isl" data-step="1" data-w="317" src="assets/island-greeting.png" alt="">
+            <img class="isl" data-step="2" data-w="341" src="assets/island-calendar.png" alt="">
+            <img class="isl" data-step="3" data-w="273" src="assets/island-clock.png" alt="">
+            <img class="isl" data-step="4" data-w="393" src="assets/island-approval.png" alt="">
+            <img class="isl" data-step="5" data-w="425" src="assets/island-question.png" alt="">
+          </div>
+        </div>
+        <div class="lid-top"></div>
+        <div class="lid-back">
+          <!-- Nova's star, where a brand logo would be -->
+          <svg viewBox="0 0 100 100" aria-hidden="true"><defs>
+            <linearGradient id="pearl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE7F0"/><stop offset=".45" stop-color="#F4F2FA"/><stop offset="1" stop-color="#CFE9FF"/></linearGradient></defs>
+            <path fill="url(#pearl)" d="M50 4C55 32 68 45 96 50 68 55 55 68 50 96 45 68 32 55 4 50 32 45 45 32 50 4Z"/></svg>
         </div>
       </div>
-      <div class="base"><div class="keys"></div><div class="trackpad"></div></div>
+      <div class="base">
+        <div class="glow"></div>
+        <div class="deck">
+          <div class="hinge"></div>
+          <div class="grille l"></div><div class="grille r"></div>
+          <div class="keys" id="keys"></div>
+          <div class="trackpad"></div>
+          <div class="scoop"></div>
+        </div>
+        <div class="lip"></div>
+      </div>
     </div>
 
     <div class="shade" id="shade"></div>
@@ -326,12 +385,13 @@
 
   // Keyframes along the scroll:  p, rotateX, rotateY, scale, y (vh)
   const K = [
-    [0.00, -24,  26, 0.62, 44],
-    [0.10, -10,   0, 0.86, 30],
-    [0.18,  -2,   0, 'Z',  12],
-    [0.80,  -2,   0, 'Z',  12],
-    [0.92, -20, -24, 0.5, 8],
-    [1.00, -20, -24, 0.5, 6],
+    [0.00, -26,  28, 0.62, 44],
+    [0.10, -14,   0, 0.86, 30],
+    [0.18,  -9,   0, 'Z',  12],      // the lid tilts back 9°, so this faces it straight on
+    [0.80,  -9,   0, 'Z',  12],
+    [0.88, -18, -34, 0.52,  8],
+    [0.97, -14, -162, 0.52, 8],      // turns around: Nova's star on the back
+    [1.00, -14, -162, 0.52, 8],
   ];
   const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const lerp = (a, b, t) => a + (b - a) * t;
@@ -343,7 +403,9 @@
     const a = K[i], b = K[i + 1];
     const t = ease(Math.min(1, Math.max(0, (p - a[0]) / (b[0] - a[0]))));
     const y = lerp(a[4], b[4], t) * innerHeight / 100;
-    mac.style.transform = `translateY(${y}px) rotateX(${lerp(a[1], b[1], t)}deg) rotateY(${lerp(a[2], b[2], t)}deg) scale(${lerp(val(a[3]), val(b[3]), t)})`;
+    const ry = lerp(a[2], b[2], t);
+    mac.style.transform = `translateY(${y}px) rotateX(${lerp(a[1], b[1], t)}deg) rotateY(${ry}deg) scale(${lerp(val(a[3]), val(b[3]), t)})`;
+    screen.style.setProperty('--glare', (ry / 30 * 35) + '%');
   }
 
   function update() {
@@ -363,6 +425,22 @@
     finale.classList.toggle('on', p > 0.86);
     bar.classList.toggle('show', scrollY > story.offsetTop + story.offsetHeight - innerHeight * 0.5);
   }
+
+  // The keyboard: a function row and five rows of keys.
+  const rows = [
+    'repeat(14,1fr)',
+    'repeat(13,1fr) 1.5fr',
+    '1.5fr repeat(13,1fr)',
+    '1.8fr repeat(11,1fr) 1.8fr',
+    '2.35fr repeat(10,1fr) 2.35fr',
+    '1fr 1fr 1fr 1.25fr 5.6fr 1.25fr 1fr 1fr 1fr',
+  ];
+  const keys = document.getElementById('keys');
+  rows.forEach(cols => {
+    const r = document.createElement('div'); r.className = 'row'; r.style.gridTemplateColumns = cols;
+    r.innerHTML = '<i></i>'.repeat(cols.split(' ').reduce((n, c) => n + (c.startsWith('repeat') ? +c.match(/\d+/)[0] : 1), 0));
+    keys.appendChild(r);
+  });
 
   let queued = false;
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; update(); }); } }, { passive: true });
