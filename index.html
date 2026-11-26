@@ -208,10 +208,6 @@
   .shade { position: absolute; inset: auto 0 0; height: 48vh; z-index: 3; pointer-events: none;
     background: linear-gradient(180deg, transparent, rgba(5,6,26,.88) 70%); opacity: 0; transition: opacity .5s ease; }
   .shade.on { opacity: 1; }
-  .finale { position: absolute; left: 0; right: 0; bottom: 9vh; text-align: center; z-index: 5; opacity: 0; transform: translateY(20px);
-    transition: opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1); pointer-events: none; padding: 0 24px; }
-  .finale.on { opacity: 1; transform: none; pointer-events: auto; }
-  .finale h2 { font-size: clamp(36px, 5vw, 68px); line-height: 1.02; margin: 0 auto 28px; max-width: 14ch; }
   .fine { color: var(--mist); font-size: 13.5px; margin: 16px 0 0; }
   .hint { position: absolute; left: 50%; bottom: 3.5vh; transform: translateX(-50%); color: var(--mist); font-size: 13px; z-index: 3; transition: opacity .4s; }
 
@@ -344,7 +340,7 @@
   @media (prefers-reduced-motion: reduce) {
     .story { height: auto; }
     .stage { position: relative; }
-    .isl, .cap, .finale, .bloom { transition: none; }
+    .isl, .cap, .bloom { transition: none; }
     .download::before { animation: none; }
   }
 </style>
@@ -417,14 +413,6 @@
       <div class="cap" data-step="5"><h2 class="display">It lets you choose.</h2><p>When Claude asks a question, the options appear right where you're looking.</p></div>
     </div>
 
-    <div class="finale" id="finale">
-      <h2 class="display">Give your notch a little company.</h2>
-      <a class="download" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg>
-        Download for Mac
-      </a>
-      <p class="fine">Free, for MacBooks with a notch on macOS 14 or later.</p>
-    </div>
     <div class="hint" id="hint">Scroll</div>
   </div>
 </section>
@@ -535,7 +523,6 @@
   const screen = document.getElementById('screen');
   const intro = document.getElementById('intro');
   const shade = document.getElementById('shade');
-  const finale = document.getElementById('finale');
   const hint = document.getElementById('hint');
   const bloom = document.getElementById('bloom');
   const islands = [...document.querySelectorAll('.isl')];
@@ -568,9 +555,9 @@
     [0.10, -14,   0, 0.86, 30],
     [0.18,  -9,   0, 'Z',  12],      // the lid tilts back 9°, so this faces it straight on
     [0.80,  -9,   0, 'Z',  12],
-    [0.88, -18, -34, 0.52,  8],
-    [0.97, -14, -162, 0.52, 8],      // turns around: Nova's star on the back
-    [1.00, -14, -162, 0.52, 8],
+    [0.88, -18, -34, 0.6, 20],
+    [0.97, -14, -162, 0.6, 22],      // turns around: Nova's star on the back, centred
+    [1.00, -14, -162, 0.6, 22],
   ];
   const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const lerp = (a, b, t) => a + (b - a) * t;
@@ -612,11 +599,10 @@
     if (p >= at[0] && p < at[5]) step = 1 + at.slice(1, 5).filter(s => p >= s).length;
     islands.forEach(el => el.classList.toggle('on', +el.dataset.step === step));
     caps.forEach(el => el.classList.toggle('on', +el.dataset.step === step));
-    shade.classList.toggle('on', step > 0 || p > 0.86);
+    shade.classList.toggle('on', step > 0);
     intro.style.opacity = Math.max(0, 1 - p / 0.08);
     intro.style.transform = `translateY(${-p * 600}px)`;
     hint.style.opacity = p < 0.02 ? 1 : 0;
-    finale.classList.toggle('on', p > 0.86);
     bloom.classList.toggle('on', step > 0);
   }
 
