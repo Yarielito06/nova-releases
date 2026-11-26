@@ -156,6 +156,34 @@
   .privacy { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
   .privacy p { color: var(--mist); margin: 0 0 14px; }
 
+  /* ── What Nova does, in plain words ───────────────────────────── */
+  .does { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px 40px; }
+  .does article { max-width: 30ch; }
+  .does svg {
+    width: 30px; height: 30px; margin-bottom: 16px; display: block;
+    stroke: var(--pearl); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+    filter: drop-shadow(0 0 10px rgba(191,234,255,.35));
+  }
+  .does h3 { font: 600 18px/1.3 var(--text); margin: 0 0 8px; }
+  .does p { color: var(--mist); font-size: 15.5px; margin: 0; }
+
+  /* ── Questions ────────────────────────────────────────────────── */
+  .faq { max-width: 720px; }
+  .faq details { border-top: 1px solid var(--hairline); }
+  .faq details:last-child { border-bottom: 1px solid var(--hairline); }
+  .faq summary {
+    list-style: none; cursor: pointer; padding: 20px 36px 20px 0; position: relative;
+    font: 500 17px/1.4 var(--text);
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: ""; position: absolute; right: 6px; top: 50%; width: 9px; height: 9px; margin-top: -7px;
+    border-right: 1.6px solid var(--mist); border-bottom: 1.6px solid var(--mist);
+    transform: rotate(45deg); transition: transform .25s ease;
+  }
+  .faq details[open] summary::after { transform: rotate(-135deg); margin-top: -2px; }
+  .faq details p { color: var(--mist); margin: -6px 0 22px; max-width: 60ch; }
+
   .closing { text-align: center; }
   .closing h2 { margin: 0 auto 30px; }
   footer { text-align: center; color: var(--mist); font-size: 13px; padding: 40px 0 56px; border-top: 1px solid var(--hairline); }
@@ -165,7 +193,8 @@
     .screen-top { height: 140px; }
     .island { transform: translateX(-50%) scale(.9); transform-origin: top center; }
     .hero { padding: 48px 0 80px; }
-    .moments, .privacy, .steps { grid-template-columns: 1fr; gap: 40px; }
+    .moments, .privacy, .steps, .does { grid-template-columns: 1fr; gap: 40px; }
+    .does article { max-width: none; }
     .faces { grid-template-columns: repeat(2, 1fr); }
     section { padding: 72px 0; }
   }
@@ -200,9 +229,46 @@
     <p class="fine">Free. For MacBooks with a notch, macOS 14 or later.</p>
   </header>
 
+  <section aria-labelledby="what">
+    <h2 id="what">Here's what Nova does.</h2>
+    <p class="intro">You don't start or stop anything. Nova sits beside the notch, keeps an eye on your day, and speaks up only when something matters.</p>
+    <div class="does">
+      <article>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></svg>
+        <h3>Counts your work and your breaks</h3>
+        <p>It notices when you're working and when you're taking a break, with no timer to start. After an hour and a half of focus it suggests a pause, and after a full day it tells you to stop.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M5.6 5.6l1.4 1.4M3 12h2M19 12h2M17 7l1.4-1.4"/><path d="M7 16a5 5 0 0 1 10 0M3 19h18"/></svg>
+        <h3>Starts and ends your day with you</h3>
+        <p>In the morning it says hello and lists your meetings and reminders. In the evening it sums up your day and shows what's first tomorrow.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+        <h3>Gets you to things on time</h3>
+        <p>It reads your Calendar and nudges you an hour before a meeting and again fifteen minutes before, with a Join button for video calls. Your reminders show up when they're due.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7Z"/><path d="M19 16.5c.2 1.3.9 2 2.2 2.2-1.3.2-2 .9-2.2 2.2-.2-1.3-.9-2-2.2-2.2 1.3-.2 2-.9 2.2-2.2Z"/></svg>
+        <h3>Looks after your AI tools</h3>
+        <p>If you use Claude Code, Codex, Cursor or the Claude app, Nova tells you when they finish or need you, and lets you answer right from the notch.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c1 4.5 3 6.5 8 7.5-5 1-7 3-8 7.5-1-4.5-3-6.5-8-7.5 5-1 7-3 8-7.5Z"/><circle cx="10.2" cy="10.8" r=".6"/><circle cx="13.8" cy="10.8" r=".6"/></svg>
+        <h3>Has a little personality</h3>
+        <p>The star breathes, blinks and follows your cursor. It wears 3D glasses when you watch something and a headset when you play.</p>
+      </article>
+      <article>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+        <h3>Stays out of your way</h3>
+        <p>It opens only as wide as it needs to and slides aside when you reach for a menu. Everything it sees stays on your Mac.</p>
+      </article>
+    </div>
+  </section>
+
   <section aria-labelledby="moments">
-    <h2 id="moments">It speaks up only when it matters.</h2>
-    <p class="intro">Most of the time Nova is a quiet pearl beside the notch. When something needs you, the island opens just wide enough to say so, then gets out of the way.</p>
+    <h2 id="moments">This is what it looks like.</h2>
+    <p class="intro">A few of the moments you'll see in your notch. Each one opens for a few seconds, then closes again.</p>
     <div class="moments">
       <figure class="moment">
         <div class="shot"><img src="assets/island-calendar.png" width="341" alt="Nova's island showing: Design review, in 15 minutes, get ready, with a Join button"></div>
@@ -251,6 +317,40 @@
         <p>Nova looks at which app is in front and your calendar only to understand your day. It doesn't send any of it anywhere, and it has no account to sign in to.</p>
         <p>You choose what it connects to, and you can switch each one off in Settings.</p>
       </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="questions">
+    <h2 id="questions">Questions people ask.</h2>
+    <div class="faq">
+      <details>
+        <summary>Is Nova free?</summary>
+        <p>Yes. Download it and use everything.</p>
+      </details>
+      <details>
+        <summary>Which Macs does it work on?</summary>
+        <p>MacBook Air and MacBook Pro models with a notch (from late 2021 onwards), running macOS 14 Sonoma or later.</p>
+      </details>
+      <details>
+        <summary>Do I have to set anything up?</summary>
+        <p>Barely. The first time you open Nova, a short setup asks your name and which apps you'd like it to connect to. You can skip anything and change it later.</p>
+      </details>
+      <details>
+        <summary>Why does it ask for permissions?</summary>
+        <p>Accessibility lets Nova tell YouTube from your work in the browser and notice when Claude replies. Calendar and Reminders let it remind you about meetings and to-dos. Each one is optional, and Nova works without them.</p>
+      </details>
+      <details>
+        <summary>Do I need to use AI tools?</summary>
+        <p>No. Nova is a focus, break and calendar companion for anyone. The AI features simply switch on if you use Claude Code, Codex, Cursor or the Claude app.</p>
+      </details>
+      <details>
+        <summary>How do I open Settings or quit Nova?</summary>
+        <p>Right-click the notch. You'll find Settings and Quit there.</p>
+      </details>
+      <details>
+        <summary>How do I remove it?</summary>
+        <p>Right-click the notch and choose Quit, then drag Nova from your Applications folder to the Bin.</p>
+      </details>
     </div>
   </section>
 
