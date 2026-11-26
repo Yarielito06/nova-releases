@@ -56,13 +56,22 @@
   .download.small svg { width: 15px; height: 15px; }
   @keyframes sheen { to { transform: rotate(1turn); } }
 
-  .bar { position: fixed; inset: 0 0 auto; z-index: 20; height: 64px; display: flex; align-items: center;
-    background: rgba(5,6,26,.6); backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border-bottom: 1px solid var(--hairline); transform: translateY(-100%); transition: transform .45s cubic-bezier(.2,.8,.2,1); }
-  .bar.show { transform: none; }
-  .bar .inner { width: var(--wrap); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-  .brand { display: flex; align-items: center; gap: 10px; font: 600 16px/1 var(--text); text-decoration: none; }
-  .brand img { width: 28px; height: 28px; }
+  /* floating glass nav, from the first second */
+  .nav { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 30;
+    width: min(780px, 100% - 24px); height: 54px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 8px 0 18px; border-radius: 999px;
+    background: rgba(20, 21, 44, .5); backdrop-filter: blur(22px) saturate(170%); -webkit-backdrop-filter: blur(22px) saturate(170%);
+    border: 1px solid rgba(255,255,255,.08); box-shadow: 0 12px 40px -12px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06); }
+  .brand { display: flex; align-items: center; gap: 9px; font: 600 16px/1 var(--display); letter-spacing: -0.01em; text-decoration: none; }
+  .brand svg { width: 20px; height: 20px; filter: drop-shadow(0 0 8px rgba(220,206,255,.6)); }
+  .links { display: flex; gap: 4px; }
+  .links a { color: var(--mist); font-size: 14px; text-decoration: none; padding: 8px 12px; border-radius: 999px; transition: color .2s, background .2s; }
+  .links a:hover { color: var(--pearl); background: rgba(255,255,255,.06); }
+  @media (max-width: 700px) { .links { display: none; } }
+
+  /* fine film grain over everything: depth, never flat */
+  body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .07; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
   /* ── The scroll story ─────────────────────────────────────────── */
   .story { position: relative; height: 640vh; }
@@ -71,7 +80,7 @@
     background: radial-gradient(1200px 700px at 50% 0%, var(--dusk), transparent 70%), var(--night);
     perspective: 2200px; perspective-origin: 50% 30%;
   }
-  .intro { position: absolute; inset: 9vh 24px auto; text-align: center; z-index: 3; }
+  .intro { position: absolute; inset: calc(14vh + 20px) 24px auto; text-align: center; z-index: 3; }
   .intro h1 { font-size: clamp(44px, 7vw, 100px); line-height: .98; margin: 0 auto; max-width: 13ch; }
   .intro p { color: var(--mist); font-size: clamp(17px, 1.5vw, 20px); max-width: 30em; margin: 22px auto 0; }
 
@@ -125,6 +134,33 @@
   .menu span + span { margin-left: calc(var(--pt) * 18px); }
   .notch { position: absolute; top: 0; left: 50%; width: calc(var(--pt) * 190px); height: calc(var(--pt) * 33px); transform: translateX(-50%);
     background: #000; border-radius: 0 0 calc(var(--pt) * 12px) calc(var(--pt) * 12px); }
+  /* a desktop with real-looking windows and a dock */
+  .win { position: absolute; border-radius: calc(var(--pt) * 12px); overflow: hidden;
+    background: rgba(24, 25, 44, .82); border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 calc(var(--pt) * 30px) calc(var(--pt) * 70px) rgba(0,0,0,.55); }
+  .win.main { left: 9%; top: calc(var(--pt) * 96px); width: 58%; height: 64%; }
+  .win.side { right: 7%; top: calc(var(--pt) * 150px); width: 24%; height: 46%; background: rgba(30, 30, 52, .78); }
+  .tb { height: calc(var(--pt) * 34px); display: flex; align-items: center; gap: calc(var(--pt) * 7px); padding: 0 calc(var(--pt) * 13px);
+    border-bottom: 1px solid rgba(255,255,255,.06); }
+  .tb i { width: calc(var(--pt) * 11px); height: calc(var(--pt) * 11px); border-radius: 50%; display: block; }
+  .tb i:nth-child(1) { background: #FF5F57; } .tb i:nth-child(2) { background: #FEBC2E; } .tb i:nth-child(3) { background: #28C840; }
+  .body { display: grid; grid-template-columns: 22% 1fr; height: calc(100% - var(--pt) * 34px); }
+  .sidebar { background: rgba(255,255,255,.03); padding: calc(var(--pt) * 16px); }
+  .ln { height: calc(var(--pt) * 9px); border-radius: 99px; background: rgba(255,255,255,.12); margin-bottom: calc(var(--pt) * 13px); }
+  .content { padding: calc(var(--pt) * 26px) calc(var(--pt) * 30px); }
+  .content .h { height: calc(var(--pt) * 20px); width: 46%; border-radius: 6px; background: rgba(255,255,255,.22); margin-bottom: calc(var(--pt) * 22px); }
+  .ln.c1 { background: rgba(220,206,255,.28); } .ln.c2 { background: rgba(191,234,255,.24); } .ln.c3 { background: rgba(255,201,220,.24); }
+  .event { margin: calc(var(--pt) * 14px); padding: calc(var(--pt) * 10px); border-radius: calc(var(--pt) * 8px); border-left: calc(var(--pt) * 3px) solid #FC6B21; background: rgba(252,107,33,.13); }
+  .event.b { border-color: #4DBDEB; background: rgba(77,189,235,.12); }
+  .dock { position: absolute; left: 50%; bottom: calc(var(--pt) * 10px); transform: translateX(-50%); display: flex; gap: calc(var(--pt) * 9px);
+    padding: calc(var(--pt) * 8px); border-radius: calc(var(--pt) * 20px); background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.14); }
+  .dock i { width: calc(var(--pt) * 46px); height: calc(var(--pt) * 46px); border-radius: calc(var(--pt) * 11px); display: block;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25); }
+  /* light spilling from the notch when Nova opens */
+  .bloom { position: absolute; top: calc(var(--pt) * -120px); left: 50%; width: calc(var(--pt) * 900px); height: calc(var(--pt) * 420px); transform: translateX(-50%);
+    background: radial-gradient(50% 50% at 50% 30%, rgba(220,206,255,.55), rgba(191,234,255,.18) 45%, transparent 70%);
+    opacity: 0; transition: opacity .8s ease; pointer-events: none; }
+  .bloom.on { opacity: 1; }
   .isl { position: absolute; top: calc(var(--pt) * -14px); left: 50%; max-width: none; transform: translateX(-50%) scale(.96); opacity: 0;
     transition: opacity .45s ease, transform .55s cubic-bezier(.2,.9,.25,1.1); }
   .isl.on { opacity: 1; transform: translateX(-50%) scale(1); }
@@ -188,6 +224,27 @@
   .faces { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .face img { width: 100%; max-width: 240px; margin: 0 auto; }
   .face p { margin: 0; text-align: center; color: var(--mist); font-size: 14.5px; }
+  .bento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { position: relative; overflow: hidden; border-radius: 28px; padding: 32px; min-height: 280px;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 24px;
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(220,206,255,.08), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+    border: 1px solid var(--hairline); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
+  .card.big { grid-column: span 2; grid-row: span 2; }
+  .card.wide { grid-column: span 2; flex-direction: row; align-items: center; }
+  .card h3 { font: 600 24px/1.15 var(--display); letter-spacing: -0.025em; margin: 0 0 10px; }
+  .card p { color: var(--mist); font-size: 15.5px; margin: 0; max-width: 34ch; }
+  .card .shot { display: grid; place-items: center; flex: 1; border-radius: 20px; padding: 28px 16px;
+    background: radial-gradient(70% 70% at 50% 40%, rgba(140,120,255,.16), transparent 70%); }
+  .card.wide .shot { flex: 0 0 auto; padding: 8px; background: none; }
+  .mini-faces { display: flex; justify-content: center; margin: 0 -12px -12px; }
+  .mini-faces img { width: 33%; margin: 0 -4%; }
+  .lock { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(220,206,255,.22), rgba(191,234,255,.12)); border: 1px solid rgba(255,255,255,.1); }
+  .lock svg { width: 30px; height: 30px; fill: none; stroke: var(--pearl); stroke-width: 1.7; stroke-linecap: round; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips span { font-size: 13.5px; padding: 7px 13px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); color: #D6D7E6; }
   .start { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
   .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
   .steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; padding: 18px 0; border-top: 1px solid var(--hairline); }
@@ -212,6 +269,9 @@
   footer a:hover { color: var(--pearl); }
 
   @media (max-width: 860px) {
+    .bento { grid-template-columns: 1fr; }
+    .card.big, .card.wide { grid-column: auto; grid-row: auto; }
+    .card.wide { flex-direction: column; align-items: stretch; }
     .faces { grid-template-columns: repeat(2, 1fr); }
     .start { grid-template-columns: 1fr; gap: 56px; }
     .section { padding: 88px 0; }
@@ -220,21 +280,17 @@
   @media (prefers-reduced-motion: reduce) {
     .story { height: auto; }
     .stage { position: relative; }
-    .isl, .cap, .finale, .bar { transition: none; }
+    .isl, .cap, .finale, .bloom { transition: none; }
     .download::before { animation: none; }
   }
 </style>
 </head>
 <body>
 
-<nav class="bar" id="bar" aria-label="Nova">
-  <div class="inner">
-    <a class="brand" href="#top"><img src="assets/star-plain-cut.png" alt=""> Nova</a>
-    <a class="download small" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg>
-      Download
-    </a>
-  </div>
+<nav class="nav" aria-label="Nova">
+  <a class="brand" href="#top"><svg viewBox="0 0 100 100" aria-hidden="true"><path fill="#F4F2FA" d="M50 4C55 32 68 45 96 50 68 55 55 68 50 96 45 68 32 55 4 50 32 45 45 32 50 4Z"/></svg> Nova</a>
+  <div class="links"><a href="#features">Features</a><a href="#start">Install</a><a href="#faq">Questions</a></div>
+  <a class="download small" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg> Download</a>
 </nav>
 
 <section class="story" id="top" aria-label="What Nova does">
@@ -248,6 +304,15 @@
       <div class="lid">
         <div class="lid-front">
           <div class="screen" id="screen">
+            <div class="win main"><div class="tb"><i></i><i></i><i></i></div>
+              <div class="body"><div class="sidebar"><div class="ln" style="width:70%"></div><div class="ln" style="width:55%"></div><div class="ln" style="width:80%"></div><div class="ln" style="width:48%"></div><div class="ln" style="width:66%"></div></div>
+                <div class="content"><div class="h"></div><div class="ln c1" style="width:92%"></div><div class="ln" style="width:84%"></div><div class="ln c2" style="width:70%"></div><div class="ln" style="width:88%"></div><div class="ln" style="width:60%"></div><div class="ln c3" style="width:76%"></div><div class="ln" style="width:82%"></div></div></div></div>
+            <div class="win side"><div class="tb"><i></i><i></i><i></i></div><div class="event"><div class="ln" style="width:70%;margin:0"></div></div><div class="event b"><div class="ln" style="width:55%;margin:0"></div></div><div class="event"><div class="ln" style="width:62%;margin:0"></div></div></div>
+            <div class="dock">
+              <i style="background:linear-gradient(135deg,#7AA7FF,#3B5BDB)"></i><i style="background:linear-gradient(135deg,#FFB86B,#FC6B21)"></i><i style="background:linear-gradient(135deg,#8CE99A,#2F9E44)"></i>
+              <i style="background:linear-gradient(135deg,#F3F1F8,#C9CAD9)"></i><i style="background:linear-gradient(135deg,#DCCEFF,#7950F2)"></i><i style="background:linear-gradient(135deg,#BFEAFF,#4DBDEB)"></i>
+              <i style="background:linear-gradient(135deg,#FFC9DC,#E64980)"></i><i style="background:linear-gradient(135deg,#3A3B44,#17181C)"></i></div>
+            <div class="bloom" id="bloom"></div>
             <div class="menu"><div><span>Finder</span><span>File</span><span>Edit</span><span>View</span><span>Go</span></div><div id="clock">9:41</div></div>
             <div class="notch"></div>
             <img class="isl on" data-step="0" data-w="273" src="assets/island-closed.png" alt="">
@@ -301,18 +366,34 @@
 </section>
 
 <main>
-  <section class="section centered">
-    <h2 class="display">With a little personality.</h2>
-    <p class="sub">It breathes, follows your cursor and hops when you come back. Glasses on for a film, headset on for a game.</p>
-    <div class="faces">
-      <div class="face"><img src="assets/star-plain-cut.png" alt="Nova, the pearl star, looking at you"><p>Curious</p></div>
-      <div class="face"><img src="assets/star-happy-cut.png" alt="Nova smiling with happy closed eyes"><p>Glad you're back</p></div>
-      <div class="face"><img src="assets/star-YouTube-cut.png" alt="Nova wearing 3D glasses"><p>Watching</p></div>
-      <div class="face"><img src="assets/star-Game-cut.png" alt="Nova wearing a gaming headset"><p>Playing</p></div>
+  <section class="section" id="features">
+    <h2 class="display">Small things, every day.</h2>
+    <p class="sub">Nova is made of little moments that add up to a calmer day.</p>
+    <div class="bento">
+      <article class="card big">
+        <div class="txt"><h3>Ninety minutes, then a breath.</h3><p>Nova counts your focus on its own and nudges you to rest before you burn out. After a full day, it tells you to stop.</p></div>
+        <div class="shot"><img src="assets/island-clock.png" width="400" alt="Nova's island showing today's work time"></div>
+      </article>
+      <article class="card">
+        <div class="txt"><h3>A little personality.</h3><p>It breathes, follows your cursor and dresses up for films and games.</p></div>
+        <div class="mini-faces"><img src="assets/star-happy-cut.png" alt="Nova smiling"><img src="assets/star-YouTube-cut.png" alt="Nova in 3D glasses"><img src="assets/star-Game-cut.png" alt="Nova in a headset"></div>
+      </article>
+      <article class="card">
+        <div class="lock"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.6"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></div>
+        <div class="txt"><h3>On your Mac. Nowhere else.</h3><p>No account, no cloud. What Nova sees stays on your Mac.</p></div>
+      </article>
+      <article class="card">
+        <div class="txt"><h3>Works with your tools.</h3><p>Connect the apps you already use, and switch any of them off.</p></div>
+        <div class="chips"><span>Calendar</span><span>Reminders</span><span>Claude</span><span>Claude Code</span><span>Codex</span><span>Cursor</span></div>
+      </article>
+      <article class="card wide">
+        <div class="txt"><h3>Questions, answered in a click.</h3><p>When your AI asks you to choose, the options appear in the notch. Pick one and keep working.</p></div>
+        <div class="shot"><img src="assets/island-question.png" width="420" alt="Nova's island showing a question with two options"></div>
+      </article>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="start">
     <div class="start">
       <div>
         <h2 class="display">Ready in a minute.</h2>
@@ -330,7 +411,7 @@
     </div>
   </section>
 
-  <section class="section centered">
+  <section class="section centered" id="faq">
     <h2 class="display">Questions.</h2>
     <p class="sub">The short answers.</p>
     <div class="faq">
@@ -359,7 +440,7 @@
   const shade = document.getElementById('shade');
   const finale = document.getElementById('finale');
   const hint = document.getElementById('hint');
-  const bar = document.getElementById('bar');
+  const bloom = document.getElementById('bloom');
   const islands = [...document.querySelectorAll('.isl')];
   const caps = [...document.querySelectorAll('.cap')];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -380,6 +461,7 @@
     islands.forEach(el => el.style.width = (+el.dataset.w * pt) + 'px');
     // Zoom so the widest card fills most of the view while zoomed in.
     zoom = Math.min(small ? 3.6 : 2.2, (vw * (small ? 0.96 : 0.6)) / (425 * pt));
+    K[0][4] = small ? 56 : 44;                     // phones: start below the intro text
     update();
   }
 
@@ -408,9 +490,24 @@
     screen.style.setProperty('--glare', (ry / 30 * 35) + '%');
   }
 
-  function update() {
+  // Smooth inertia: the laptop glides toward where the scroll says it should be.
+  let cur = 0, target = 0, running = false;
+  function readTarget() {
     const total = story.offsetHeight - innerHeight;
-    const p = reduce ? 0.3 : Math.min(1, Math.max(0, -story.getBoundingClientRect().top / total));
+    target = reduce ? 0.3 : Math.min(1, Math.max(0, -story.getBoundingClientRect().top / total));
+  }
+  function loop() {
+    cur += (target - cur) * 0.11;
+    if (Math.abs(target - cur) < 0.0004) cur = target;
+    render(cur);
+    if (cur !== target) requestAnimationFrame(loop); else running = false;
+  }
+  function update() {
+    readTarget();
+    if (reduce) { cur = target; render(cur); return; }
+    if (!running) { running = true; requestAnimationFrame(loop); }
+  }
+  function render(p) {
     frame(p);
     // Which moment the island shows.
     const at = [0.20, 0.32, 0.44, 0.56, 0.68, 0.80];
@@ -423,7 +520,7 @@
     intro.style.transform = `translateY(${-p * 600}px)`;
     hint.style.opacity = p < 0.02 ? 1 : 0;
     finale.classList.toggle('on', p > 0.86);
-    bar.classList.toggle('show', scrollY > story.offsetTop + story.offsetHeight - innerHeight * 0.5);
+    bloom.classList.toggle('on', step > 0);
   }
 
   // The keyboard: a function row and five rows of keys.
@@ -442,8 +539,7 @@
     keys.appendChild(r);
   });
 
-  let queued = false;
-  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; update(); }); } }, { passive: true });
+  addEventListener('scroll', update, { passive: true });
   addEventListener('resize', layout);
   layout();
 })();
