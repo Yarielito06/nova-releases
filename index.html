@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova for Mac</title>
+<meta name="description" content="A little star that lives in your MacBook's notch. It keeps time on your focus and breaks, greets you, and taps you when your calendar or your AI agents need you.">
+<meta property="og:title" content="Nova for Mac">
+<meta property="og:description" content="A little star that lives in your notch.">
+<meta property="og:image" content="https://yarielito06.github.io/nova-releases/assets/og.png">
+<meta name="theme-color" content="#06071A">
+<link rel="icon" href="assets/star-plain-cut.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,0..100&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #06071A;        /* the sky */
+    --dusk: #14163F;         /* glow at the top of the sky */
+    --pearl: #F3F1F8;        /* text, like the star */
+    --mist: #A5A7C4;         /* secondary text */
+    --hairline: rgba(243, 241, 248, 0.10);
+    --rose: #FFC9DC; --aqua: #BFEAFF; --lilac: #DCCEFF; --champagne: #FFE7C4;  /* the pearl rim */
+    --display: "Fraunces", ui-serif, Georgia, serif;
+    --text: "Geist", ui-sans-serif, -apple-system, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 520px at 50% -120px, var(--dusk), transparent 70%),
+      var(--night);
+    color: var(--pearl);
+    font: 400 17px/1.6 var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  /* A quiet star field: fixed dots, no motion. */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .55;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, #fff9, transparent 60%),
+      radial-gradient(1px 1px at 82% 14%, #fff8, transparent 60%),
+      radial-gradient(1.5px 1.5px at 68% 38%, #fff6, transparent 60%),
+      radial-gradient(1px 1px at 26% 64%, #fff5, transparent 60%),
+      radial-gradient(1px 1px at 90% 72%, #fff6, transparent 60%),
+      radial-gradient(1.5px 1.5px at 8% 88%, #fff4, transparent 60%),
+      radial-gradient(1px 1px at 48% 92%, #fff5, transparent 60%),
+      radial-gradient(1px 1px at 36% 8%, #fff7, transparent 60%);
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--aqua); outline-offset: 4px; border-radius: 8px; }
+
+  /* ── The screen's top edge: menu bar + notch + Nova ───────────── */
+  .screen-top { position: relative; height: 150px; }
+  .menubar {
+    position: absolute; inset: 0 0 auto 0; height: 32px;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 18px;
+    background: rgba(255,255,255,.04); border-bottom: 1px solid var(--hairline);
+    font: 500 13px/1 var(--text); color: rgba(243,241,248,.55);
+  }
+  .menubar span + span { margin-left: 18px; }
+  .island {
+    position: absolute; top: -7px; left: 50%; transform: translateX(-50%);
+    width: 317px; height: 125px;            /* the open greeting, 1x */
+  }
+  .island img { position: absolute; top: 0; left: 50%; transform: translateX(-50%); display: block; }
+  .island .closed { width: 273px; }
+  .island .open {
+    width: 317px;
+    clip-path: inset(0 22% 76% 22% round 0 0 18px 18px);
+    opacity: 0;
+    animation: open 900ms cubic-bezier(.2,.9,.25,1.08) 900ms forwards;
+  }
+  .island .closed { animation: fade 300ms ease 1000ms forwards; }
+  @keyframes open {
+    to { clip-path: inset(0 0 0 0 round 0 0 0 0); opacity: 1; }
+  }
+  @keyframes fade { to { opacity: 0; } }
+
+  /* ── Hero ─────────────────────────────────────────────────────── */
+  main { width: min(1080px, 100% - 32px); margin: 0 auto; }
+  .hero { text-align: center; padding: 72px 0 112px; }
+  h1 {
+    font: 400 clamp(44px, 7.4vw, 88px)/1.02 var(--display);
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+    letter-spacing: -0.02em;
+    margin: 0 auto; max-width: 13ch;
+  }
+  .lede { color: var(--mist); max-width: 34em; margin: 26px auto 40px; font-size: 19px; }
+  .download {
+    position: relative; display: inline-flex; align-items: center; gap: 12px;
+    padding: 17px 30px 17px 24px; border-radius: 999px;
+    color: #0C0D24; text-decoration: none; font: 600 17px/1 var(--text);
+    background: var(--pearl);
+    box-shadow: 0 10px 40px -10px rgba(191,234,255,.45), inset 0 0 0 1px rgba(255,255,255,.6);
+    isolation: isolate; overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  /* The pearl sheen: the same rim colours as Nova, turning slowly under the surface. */
+  .download::before {
+    content: ""; position: absolute; inset: -60%; z-index: -1;
+    background: conic-gradient(from 0deg, var(--rose), var(--aqua), var(--lilac), var(--champagne), var(--rose));
+    opacity: .55; filter: blur(18px);
+    animation: sheen 9s linear infinite;
+  }
+  .download::after { content: ""; position: absolute; inset: 2px; border-radius: 999px; background: rgba(255,255,255,.72); z-index: -1; }
+  .download:hover { transform: translateY(-1px); box-shadow: 0 16px 50px -10px rgba(220,206,255,.55), inset 0 0 0 1px #fff; }
+  .download svg { width: 20px; height: 20px; }
+  @keyframes sheen { to { transform: rotate(1turn); } }
+  .fine { color: var(--mist); font-size: 14px; margin-top: 18px; }
+
+  /* ── Moments ──────────────────────────────────────────────────── */
+  section { padding: 96px 0; border-top: 1px solid var(--hairline); }
+  h2 {
+    font: 400 clamp(32px, 4.4vw, 48px)/1.08 var(--display);
+    font-variation-settings: "SOFT" 100, "opsz" 96;
+    letter-spacing: -0.015em; margin: 0 0 14px; max-width: 18ch;
+  }
+  .intro { color: var(--mist); max-width: 36em; margin: 0 0 56px; }
+  .moments { display: grid; grid-template-columns: repeat(2, 1fr); gap: 56px 40px; }
+  .moment figure { margin: 0; }
+  .shot {
+    display: grid; place-items: center; min-height: 220px; padding: 28px 16px 20px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+    border: 1px solid var(--hairline);
+    position: relative; overflow: hidden;
+  }
+  /* each screenshot hangs from a strip of "screen top", like on a real Mac */
+  .shot::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 18px; background: rgba(0,0,0,.35); }
+  .shot img { position: relative; max-width: 100%; height: auto; display: block; margin-top: -10px; }
+  figcaption { margin-top: 16px; }
+  figcaption strong { display: block; font-weight: 600; font-size: 17px; }
+  figcaption span { color: var(--mist); font-size: 15px; }
+
+  /* ── Character ────────────────────────────────────────────────── */
+  .faces { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .face { text-align: center; }
+  .face img { width: 100%; max-width: 220px; height: auto; display: block; margin: 0 auto; }
+  .face p { margin: 0; color: var(--mist); font-size: 15px; }
+
+  /* ── Install ──────────────────────────────────────────────────── */
+  .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; counter-reset: s; }
+  .steps li { counter-increment: s; padding-top: 22px; border-top: 1px solid var(--hairline); }
+  .steps li::before {
+    content: counter(s); display: block; margin-bottom: 10px;
+    font: 400 44px/1 var(--display); font-variation-settings: "SOFT" 100;
+    background: linear-gradient(120deg, var(--rose), var(--aqua) 45%, var(--lilac));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .steps strong { display: block; font-weight: 600; margin-bottom: 4px; }
+  .steps span { color: var(--mist); font-size: 15px; }
+
+  .privacy { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .privacy p { color: var(--mist); margin: 0 0 14px; }
+
+  .closing { text-align: center; }
+  .closing h2 { margin: 0 auto 30px; }
+  footer { text-align: center; color: var(--mist); font-size: 13px; padding: 40px 0 56px; border-top: 1px solid var(--hairline); }
+
+  @media (max-width: 760px) {
+    .menubar .menus { display: none; }
+    .screen-top { height: 140px; }
+    .island { transform: translateX(-50%) scale(.9); transform-origin: top center; }
+    .hero { padding: 48px 0 80px; }
+    .moments, .privacy, .steps { grid-template-columns: 1fr; gap: 40px; }
+    .faces { grid-template-columns: repeat(2, 1fr); }
+    section { padding: 72px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .island .open { animation: none; opacity: 1; clip-path: none; }
+    .island .closed { animation: none; opacity: 0; }
+    .download::before { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="screen-top" aria-hidden="true">
+  <div class="menubar">
+    <div class="menus"><span>Finder</span><span>File</span><span>Edit</span><span>View</span><span>Go</span></div>
+    <div id="clock">9:41</div>
+  </div>
+  <div class="island">
+    <img class="closed" src="assets/island-closed.png" alt="">
+    <img class="open" src="assets/island-greeting.png" alt="">
+  </div>
+</div>
+
+<main>
+  <header class="hero">
+    <h1>A little star that lives in your notch.</h1>
+    <p class="lede">Nova keeps time on your focus and your breaks, greets you when you sit down, and taps you on the shoulder when a meeting is coming or an AI agent needs you.</p>
+    <a class="download" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg>
+      Download for Mac
+    </a>
+    <p class="fine">Free. For MacBooks with a notch, macOS 14 or later.</p>
+  </header>
+
+  <section aria-labelledby="moments">
+    <h2 id="moments">It speaks up only when it matters.</h2>
+    <p class="intro">Most of the time Nova is a quiet pearl beside the notch. When something needs you, the island opens just wide enough to say so, then gets out of the way.</p>
+    <div class="moments">
+      <figure class="moment">
+        <div class="shot"><img src="assets/island-calendar.png" width="341" alt="Nova's island showing: Design review, in 15 minutes, get ready, with a Join button"></div>
+        <figcaption><strong>Meetings, before they sneak up on you</strong><span>An hour ahead to keep it in mind, fifteen minutes ahead to get ready, and a Join button for the call.</span></figcaption>
+      </figure>
+      <figure class="moment">
+        <div class="shot"><img src="assets/island-clock.png" width="273" alt="Nova's island showing today's work time with a progress ring"></div>
+        <figcaption><strong>Your hours, without a timer</strong><span>Work and breaks are counted on their own. After ninety minutes of focus, Nova suggests a break.</span></figcaption>
+      </figure>
+      <figure class="moment">
+        <div class="shot"><img src="assets/island-approval.png" width="393" alt="Nova's island asking to allow Claude Code to run npm run build and npm test"></div>
+        <figcaption><strong>Your AI agents, answered from anywhere</strong><span>Claude Code, Codex and Cursor report in. Approve a command without switching windows.</span></figcaption>
+      </figure>
+      <figure class="moment">
+        <div class="shot"><img src="assets/island-question.png" width="425" alt="Nova's island showing a question from Claude with two options to choose from"></div>
+        <figcaption><strong>Questions, picked in a click</strong><span>When Claude asks you to choose, the options appear right in the notch.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="character">
+    <h2 id="character">And it has a personality.</h2>
+    <p class="intro">Nova breathes, follows your cursor and hops when you come back. Put on a video and it reaches for its 3D glasses. Start a game and the headset comes out.</p>
+    <div class="faces">
+      <div class="face"><img src="assets/star-plain-cut.png" alt="Nova, the pearl star, looking at you"><p>Curious</p></div>
+      <div class="face"><img src="assets/star-happy-cut.png" alt="Nova smiling with happy closed eyes"><p>Glad you're back</p></div>
+      <div class="face"><img src="assets/star-YouTube-cut.png" alt="Nova wearing 3D glasses"><p>Watching something</p></div>
+      <div class="face"><img src="assets/star-Game-cut.png" alt="Nova wearing a gaming headset"><p>Playing</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="install">
+    <h2 id="install">Installed in a minute.</h2>
+    <p class="intro">Nova is signed and checked by Apple, so it opens like any other app.</p>
+    <ol class="steps">
+      <li><strong>Download Nova</strong><span>Click the button above to get the installer.</span></li>
+      <li><strong>Drag it to Applications</strong><span>Open the file you downloaded, then drag Nova into the Applications folder.</span></li>
+      <li><strong>Open Nova</strong><span>A short setup asks your name and what you'd like it to connect to. That's it.</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="privacy">
+    <div class="privacy">
+      <h2 id="privacy">Everything stays on your Mac.</h2>
+      <div>
+        <p>Nova looks at which app is in front and your calendar only to understand your day. It doesn't send any of it anywhere, and it has no account to sign in to.</p>
+        <p>You choose what it connects to, and you can switch each one off in Settings.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <h2>Give your notch a little company.</h2>
+    <a class="download" href="https://github.com/Yarielito06/nova-releases/releases/latest/download/Nova.dmg">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.6c-.02-2.2 1.8-3.26 1.88-3.31-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.05 1.6 2.24 2.73 2.2 1.1-.05 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.4 1.2-2.47-.03-.01-2.3-.88-2.3-3.52ZM14.2 6.13c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.55 1.31-.56.65-1.05 1.69-.92 2.68.97.08 1.96-.49 2.57-1.23Z"/></svg>
+      Download for Mac
+    </a>
+    <p class="fine">Version 0.3.0</p>
+  </section>
+</main>
+
+<footer>Nova is made for people who work a little too long.</footer>
+
+<script>
+  // The menu bar clock shows the visitor's own time.
+  const c = document.getElementById('clock');
+  const tick = () => c.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  tick(); setInterval(tick, 30000);
+</script>
+</body>
+</html>
